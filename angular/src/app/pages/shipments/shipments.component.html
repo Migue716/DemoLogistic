@@ -1,0 +1,66 @@
+<div class="page">
+  <header class="header">
+    <div>
+      <h1 class="title">Shipments</h1>
+      <p class="subtitle">Manage all your shipments.</p>
+    </div>
+    <button type="button" class="exportBtn" (click)="exportCsv()">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3" />
+      </svg>
+      Export
+    </button>
+  </header>
+
+  <div class="toolbar">
+    <input
+      type="search"
+      class="search"
+      placeholder="Search by ID, client, or destination..."
+      [value]="search()"
+      (input)="onSearch($any($event.target).value)"
+      aria-label="Search shipments"
+    />
+    <button
+      type="button"
+      class="filterBtn"
+      (click)="toggleFilter()"
+      [attr.aria-pressed]="filterOpen()"
+    >
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
+      </svg>
+      Filter
+    </button>
+  </div>
+
+  <div class="tableWrap">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Shipment ID</th>
+          <th>Client</th>
+          <th>Origin</th>
+          <th>Destination</th>
+          <th>Status</th>
+          <th>ETA</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (row of filtered(); track row.id) {
+          <tr>
+            <td><span class="linkId">{{ row.id }}</span></td>
+            <td>{{ row.client }}</td>
+            <td>{{ row.origin }}</td>
+            <td>{{ row.destination }}</td>
+            <td><span class="badge" [ngClass]="statusClass(row.status)">{{ row.status }}</span></td>
+            <td>{{ row.eta }}</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+    @if (filtered().length === 0) {
+      <p class="empty">No shipments match your search.</p>
+    }
+  </div>
+</div>

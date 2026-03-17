@@ -1,0 +1,169 @@
+<div class="page">
+  <header class="header">
+    <h1 class="title">Settings</h1>
+    <p class="subtitle">Manage your account and preferences</p>
+  </header>
+
+  <div class="grid">
+    <section class="card">
+      <div class="cardHeader">
+        <span class="cardIcon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" />
+            <circle cx="12" cy="7" r="4" />
+          </svg>
+        </span>
+        <h2 class="cardTitle">Profile Information</h2>
+      </div>
+      <div class="fields">
+        <label class="label">
+          First Name
+          <input
+            type="text"
+            [value]="profile().firstName"
+            (input)="updateProfile('firstName', $any($event.target).value)"
+            class="input"
+          />
+        </label>
+        <label class="label">
+          Last Name
+          <input
+            type="text"
+            [value]="profile().lastName"
+            (input)="updateProfile('lastName', $any($event.target).value)"
+            class="input"
+          />
+        </label>
+        <label class="label">
+          Email
+          <input
+            type="email"
+            [value]="profile().email"
+            (input)="updateProfile('email', $any($event.target).value)"
+            class="input"
+          />
+        </label>
+        <label class="label">
+          Company
+          <input type="text" [value]="profile().company" readonly class="input" />
+        </label>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="cardHeader">
+        <span class="cardIcon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10" />
+            <line x1="2" y1="12" x2="22" y2="12" />
+            <path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z" />
+          </svg>
+        </span>
+        <h2 class="cardTitle">Preferences</h2>
+      </div>
+      <div class="fields">
+        <label class="label">
+          Language
+          <select
+            [value]="prefs().language"
+            (change)="updatePrefs('language', $any($event.target).value)"
+            class="select"
+          >
+            <option value="en">English</option>
+            <option value="es">Spanish</option>
+            <option value="de">German</option>
+            <option value="fr">French</option>
+          </select>
+        </label>
+        <label class="label">
+          Timezone
+          <select
+            [value]="prefs().timezone"
+            (change)="updatePrefs('timezone', $any($event.target).value)"
+            class="select"
+          >
+            <option value="UTC-8">UTC-8 (Pacific)</option>
+            <option value="UTC-5">UTC-5 (Eastern)</option>
+            <option value="UTC">UTC</option>
+            <option value="UTC+1">UTC+1 (Central Europe)</option>
+          </select>
+        </label>
+        <label class="label">
+          Date Format
+          <select
+            [value]="prefs().dateFormat"
+            (change)="updatePrefs('dateFormat', $any($event.target).value)"
+            class="select"
+          >
+            <option value="YYYY-MM-DD">YYYY-MM-DD</option>
+            <option value="DD/MM/YYYY">DD/MM/YYYY</option>
+            <option value="MM/DD/YYYY">MM/DD/YYYY</option>
+          </select>
+        </label>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="cardHeader">
+        <span class="cardIcon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9" />
+            <path d="M13.73 21a2 2 0 01-3.46 0" />
+          </svg>
+        </span>
+        <h2 class="cardTitle">Notifications</h2>
+      </div>
+      <div class="checkboxes">
+        <label class="checkbox">
+          <input
+            type="checkbox"
+            [checked]="notifications().emailUpdates"
+            (change)="updateNotifications('emailUpdates', $any($event.target).checked)"
+          />
+          <span>Email notifications for shipment updates</span>
+        </label>
+        <label class="checkbox">
+          <input
+            type="checkbox"
+            [checked]="notifications().smsCustoms"
+            (change)="updateNotifications('smsCustoms', $any($event.target).checked)"
+          />
+          <span>SMS alerts for customs clearance</span>
+        </label>
+        <label class="checkbox">
+          <input
+            type="checkbox"
+            [checked]="notifications().weeklySummary"
+            (change)="updateNotifications('weeklySummary', $any($event.target).checked)"
+          />
+          <span>Weekly summary reports</span>
+        </label>
+        <label class="checkbox">
+          <input
+            type="checkbox"
+            [checked]="notifications().promotional"
+            (change)="updateNotifications('promotional', $any($event.target).checked)"
+          />
+          <span>Promotional emails</span>
+        </label>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="cardHeader">
+        <span class="cardIcon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="1" y="4" width="22" height="16" rx="2" ry="2" />
+            <line x1="1" y1="10" x2="23" y2="10" />
+          </svg>
+        </span>
+        <h2 class="cardTitle">Subscription</h2>
+      </div>
+      <div class="subscription">
+        <p class="subLabel">Current Plan</p>
+        <p class="subPlan">Premium</p>
+        <button type="button" class="manageBtn">Manage Subscription</button>
+      </div>
+    </section>
+  </div>
+</div>

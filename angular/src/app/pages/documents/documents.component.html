@@ -1,0 +1,46 @@
+<div class="page">
+  <header class="header">
+    <h1 class="title">Documents</h1>
+    <p class="subtitle">Manage shipping documents and certificates</p>
+  </header>
+
+  <div class="tabs">
+    @for (tab of tabs; track tab.id) {
+      <button
+        type="button"
+        class="tab"
+        [class.tabActive]="activeTab() === tab.id"
+        (click)="setTab(tab.id)"
+      >
+        {{ tab.label }}
+      </button>
+    }
+  </div>
+
+  <div class="card">
+    <ul class="list">
+      @for (doc of filtered(); track doc.title) {
+        <li class="row">
+          <span class="docIcon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
+              <path d="M14 2v6h6M16 13H8M16 17H8M10 9H8" />
+            </svg>
+          </span>
+          <div class="docInfo">
+            <span class="docTitle">{{ doc.title }}</span>
+            <span class="docMeta">{{ doc.date }} · {{ doc.size }}</span>
+          </div>
+          <button type="button" class="downloadBtn" [attr.aria-label]="'Download ' + doc.title">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3" />
+            </svg>
+          </button>
+        </li>
+      }
+    </ul>
+    @if (filtered().length === 0) {
+      <p class="empty">No documents in this category.</p>
+    }
+  </div>
+</div>
