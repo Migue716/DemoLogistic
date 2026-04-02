@@ -1,0 +1,60 @@
+# ── Si siguen apareciendo bin/obj/node_modules en "Cambios", ya estaban rastreados.
+#    Quita del índice (no borra archivos en disco) y luego commit:
+#    git rm -r --cached react/node_modules angular/node_modules 2>$null
+#    git rm -r --cached shiptrack-functions/bin shiptrack-functions/obj shiptrack-api/bin shiptrack-api/obj 2>$null
+#    git add .gitignore && git commit -m "Dejar de versionar artefactos de build"
+
+# .NET — salidas de compilación (cualquier proyecto)
+**/bin/
+**/obj/
+**/obj/**
+
+# NuGet / MSBuild generados en obj (p. ej. shiptrack-functions\obj\ShipTrack.Functions.csproj.nuget.g.targets)
+**/*.csproj.nuget.g.targets
+**/*.csproj.nuget.g.props
+**/obj/**/project.assets.json
+**/obj/**/project.nuget.cache
+**/obj/**/project.packagespec.json
+**/obj/**/rider.project.model.nuget.info
+**/obj/**/rider.project.restore.info
+
+**/out/
+**/publish/
+**/TestResults/
+*.user
+*.suo
+
+# Node — dependencias y cachés (Vite pone .vite dentro de node_modules)
+node_modules/
+**/node_modules/
+**/.vite/
+
+# Front — builds y caché Angular
+**/dist/
+**/.angular/cache/
+
+# IDE
+.vs/
+*.userosscache
+*.sln.docstates
+
+# Logs y temporales
+*.log
+*.tmp
+*.temp
+
+# Azure Functions — artefactos del host local
+**/.azurefunctions/
+
+# Python
+**/__pycache__/
+**/.venv/
+**/venv/
+
+# Rutas explícitas del monorepo (refuerzo por si los patrones globales fallan en algún cliente)
+/react/node_modules/
+/angular/node_modules/
+/shiptrack-functions/bin/
+/shiptrack-functions/obj/
+/shiptrack-api/bin/
+/shiptrack-api/obj/

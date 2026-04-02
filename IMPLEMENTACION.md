@@ -44,7 +44,7 @@ dotnet run
 
 ### Azure Functions (`shiptrack-functions/`)
 
-- **Detección de cambios (INSERT/UPDATE/DELETE):** enlace `[SqlTrigger]` sobre `[dbo].[Shipments]`; requiere **Change Tracking** en la base y en la tabla.
+- **Detección de cambios (INSERT/UPDATE/DELETE):** enlace `[SqlTrigger]` sobre `[dbo].[Shipments]`; requiere **Change Tracking** en la base y en la tabla. En **INSERT**: opcional **Azure Service Bus** (`ShipmentServiceBus` + cola) para desacoplar; el worker envía **correo SMTP** (`ShipmentNotify*`). Sin Service Bus, el correo puede ir **directo** desde el trigger (misma doc).
 - **Obtener datos:** `GET /api/fn/shipments` y `GET /api/fn/shipments/{id}` con **SqlInput**.
 - **Insertar:** `POST /api/fn/shipments` con **SqlOutput** (JSON camelCase).
 

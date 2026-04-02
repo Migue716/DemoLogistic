@@ -10,7 +10,7 @@ Documento de referencia sobre el proyecto **Azure Functions** del demo logístic
 |----------|--------|
 | Runtime | **Azure Functions v4**, worker **.NET aislado** (`dotnet-isolated`) |
 | Framework | **.NET 8** (`net8.0`), salida **Exe** |
-| Paquetes clave | `Microsoft.Azure.Functions.Worker` 1.24.0, `Worker.Extensions.Http` 3.3.0, `Worker.Extensions.Sql` 3.1.527, **`Microsoft.Data.SqlClient` 5.2.2** (UPDATE/DELETE vía ADO.NET) |
+| Paquetes clave | `Microsoft.Azure.Functions.Worker` 1.24.0, `Worker.Extensions.Http` 3.3.0, `Worker.Extensions.Sql` 3.1.527, `Microsoft.Data.SqlClient` 5.2.2, **`Azure.Messaging.ServiceBus` 7.18**, **`MailKit` 4.9** |
 | Host | `Program.cs` con `HostBuilder` + `ConfigureFunctionsWorkerDefaults()` |
 
 `host.json` usa **extension bundle** `[4.*, 5.0.0)` y nivel de log `Information` por defecto.
@@ -53,7 +53,7 @@ POST, PUT y DELETE disparan el **SqlTrigger** si Change Tracking está activo.
 | Tipo | **`[SqlTrigger]`** sobre tabla **`[dbo].[Shipments]`** |
 | Conexión | Mismo setting **`SqlConnectionString`** |
 | Payload | `IReadOnlyList<SqlChange<ShipmentRow>>` |
-| Efecto | Por cada cambio, **log** `Information` con operación (INSERT/UPDATE/DELETE), `ShipmentId`, `Client`, `Status`, `Eta` |
+| Efecto | Por cada cambio, **log** `Information` con operación (INSERT/UPDATE/DELETE), `ShipmentId`, `Client`, `Status`, `Eta`. En **INSERT**: si existe `ShipmentServiceBus`, **publica** JSON del envío en la cola (`ShipmentInsertedQueueName`, default `shipment-inserted`); un **BackgroundService** consume la cola y envía **correo SMTP** (MailKit, `ShipmentNotify*`). Sin Service Bus, el correo puede enviarse **desde el trigger** si `ShipmentNotify*` está configurado. |
 
 **Requisito en SQL Server:** [Change Tracking](https://learn.microsoft.com/sql/relational-databases/track-changes/enable-and-disable-change-tracking-sql-server) habilitado en la base y en la tabla (`shiptrack-api/Scripts/EnableChangeTracking.sql`).
 

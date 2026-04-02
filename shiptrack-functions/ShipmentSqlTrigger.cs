@@ -2,16 +2,18 @@ using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Extensions.Sql;
 using Microsoft.Extensions.Logging;
 using ShipTrack.Functions.Models;
+using ShipTrack.Functions.Services;
 
 namespace ShipTrack.Functions;
 
 /// <summary>
 /// Se ejecuta cuando hay INSERT/UPDATE/DELETE en dbo.Shipments (requiere Change Tracking en la BD).
+/// En INSERT: si hay <c>ShipmentServiceBus</c>, publica en la cola; si no, envía correo SMTP directo si está configurado.
 /// </summary>
 public class ShipmentSqlTrigger
 {
     [Function(nameof(ShipmentSqlTrigger))]
-    public void Run(
+    public async Task Run(
         [SqlTrigger("[dbo].[Shipments]", "SqlConnectionString")]
         IReadOnlyList<SqlChange<ShipmentRow>> changes,
         FunctionContext context)
@@ -27,6 +29,20 @@ public class ShipmentSqlTrigger
                 row.Client,
                 row.Status,
                 row.Eta);
+
+            if (change.Operation != SqlChangeOperation.Insert)
+                continue;
+
+            if (!string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable("ShipmentServiceBus")))
+            {
+                await ShipmentInsertedServiceBusPublisher.TryPublishAsync(row, logger, context.CancellationToken)
+                    .ConfigureAwait(false);
+            }
+            else
+            {
+                await ShipmentInsertedEmailNotifier.TryNotifyAsync(row, logger, context.CancellationToken)
+                    .ConfigureAwait(false);
+            }
         }
     }
 }
