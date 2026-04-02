@@ -1,5 +1,5 @@
-import { useState, useMemo } from 'react'
-import { documentsList } from '../data/mock'
+import { useState, useMemo, useEffect } from 'react'
+import { getDocuments } from '../api/shiptrackApi'
 import styles from './Documents.module.css'
 
 const TABS = [
@@ -11,11 +11,52 @@ const TABS = [
 
 export default function Documents() {
   const [activeTab, setActiveTab] = useState('all')
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
+  const [documents, setDocuments] = useState([])
+
+  useEffect(() => {
+    let cancelled = false
+    getDocuments()
+      .then((data) => {
+        if (!cancelled) {
+          setDocuments(data)
+          setLoading(false)
+        }
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setError('Could not load documents. Is the API running on port 3000?')
+          setLoading(false)
+        }
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [])
 
   const filtered = useMemo(() => {
-    if (activeTab === 'all') return documentsList
-    return documentsList.filter((doc) => doc.type === activeTab)
-  }, [activeTab])
+    if (activeTab === 'all') return documents
+    return documents.filter((doc) => doc.type === activeTab)
+  }, [activeTab, documents])
+
+  if (error) {
+    return (
+      <div className={styles.page}>
+        <p className={styles.stateError} role="alert">
+          {error}
+        </p>
+      </div>
+    )
+  }
+
+  if (loading) {
+    return (
+      <div className={styles.page}>
+        <p className={styles.stateLoading}>Loading documents…</p>
+      </div>
+    )
+  }
 
   return (
     <div className={styles.page}>

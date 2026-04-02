@@ -1,13 +1,14 @@
-import { useState, useMemo } from 'react'
-import { shipmentsTable } from '../data/mock'
+import { useState, useMemo, useEffect } from 'react'
+import { getShipments } from '../api/shiptrackApi'
 import styles from './Shipments.module.css'
 
 function StatusBadge({ status }) {
   const map = {
     'In Transit': 'transit',
-    'Customs': 'customs',
-    'Delivered': 'delivered',
-    'Pending': 'pending',
+    Customs: 'customs',
+    'In Customs': 'customs',
+    Delivered: 'delivered',
+    Pending: 'pending',
   }
   return <span className={`${styles.badge} ${styles[map[status] || 'pending']}`}>{status}</span>
 }
@@ -15,18 +16,41 @@ function StatusBadge({ status }) {
 export default function Shipments() {
   const [search, setSearch] = useState('')
   const [filterOpen, setFilterOpen] = useState(false)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
+  const [rows, setRows] = useState([])
+
+  useEffect(() => {
+    let cancelled = false
+    getShipments()
+      .then((data) => {
+        if (!cancelled) {
+          setRows(data)
+          setLoading(false)
+        }
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setError('Could not load shipments. Is the API running on port 3000?')
+          setLoading(false)
+        }
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [])
 
   const filtered = useMemo(() => {
     const q = search.toLowerCase().trim()
-    if (!q) return shipmentsTable
-    return shipmentsTable.filter(
+    if (!q) return rows
+    return rows.filter(
       (row) =>
         row.id.toLowerCase().includes(q) ||
         row.client.toLowerCase().includes(q) ||
         row.destination.toLowerCase().includes(q) ||
         row.origin.toLowerCase().includes(q)
     )
-  }, [search])
+  }, [search, rows])
 
   function handleExport() {
     const csv = [
@@ -40,6 +64,24 @@ export default function Shipments() {
     a.download = 'shipments.csv'
     a.click()
     URL.revokeObjectURL(url)
+  }
+
+  if (error) {
+    return (
+      <div className={styles.page}>
+        <p className={styles.stateError} role="alert">
+          {error}
+        </p>
+      </div>
+    )
+  }
+
+  if (loading) {
+    return (
+      <div className={styles.page}>
+        <p className={styles.stateLoading}>Loading shipments…</p>
+      </div>
+    )
   }
 
   return (

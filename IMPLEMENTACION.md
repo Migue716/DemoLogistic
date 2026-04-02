@@ -1,6 +1,6 @@
-# Implementación ShipTrack: Angular + API .NET
+# Implementación ShipTrack: Angular, React + API .NET
 
-Este documento describe cómo está armada la integración entre el front **Angular** y el backend **ASP.NET Core** del repositorio DemoLogistic / ShipTrack.
+Este documento describe la integración entre los fronts **Angular** y **React** con el backend **ASP.NET Core** (DemoLogistic / ShipTrack).
 
 ---
 
@@ -8,38 +8,30 @@ Este documento describe cómo está armada la integración entre el front **Angu
 
 | Capa | Ubicación | Rol |
 |------|-----------|-----|
-| API REST | `shiptrack-api/` | Sirve datos dummy en JSON (misma forma que tenía el mock original). |
-| Front | `angular/` | Consume la API con `HttpClient` en Dashboard, Shipments y Documents. |
+| API REST | `shiptrack-api/` | Datos dummy en JSON (misma forma que el mock original). |
+| Front Angular | `angular/` | `HttpClient` + servicio inyectable. |
+| Front React | `react/` | `fetch` + módulo `shiptrackApi.js`. |
 
-La API corre por defecto en **http://localhost:3000** y Angular en **http://localhost:4200**. La API habilita **CORS** para esos orígenes (y el de Vite en 5173 por si usas el front React).
+La API corre por defecto en **http://localhost:3000**. CORS permite **4200** (Angular) y **5173** (Vite).
 
 ---
 
 ## Backend (`shiptrack-api`)
 
-### Tecnología
+- **ASP.NET Core 8**, Minimal API, **Swagger** en Development (`/swagger`).
+- JSON en **camelCase**. Datos en `DummyData.cs`.
 
-- **ASP.NET Core 8**, Minimal API (sin controladores clásicos).
-- **Swashbuckle** para **Swagger UI** en entorno Development (`/swagger`).
-- Serialización JSON en **camelCase** para alinearla con el front.
+### Endpoints usados por ambos fronts
 
-### Datos
+| Método | Ruta | Uso |
+|--------|------|-----|
+| `GET` | `/api/kpis` | KPIs del dashboard |
+| `GET` | `/api/shipments/recent` | Envíos recientes |
+| `GET` | `/api/shipments/by-status` | Barras por estado |
+| `GET` | `/api/shipments` | Tabla de envíos (`?q=`, `?status=`) |
+| `GET` | `/api/documents` | Documentos (`?type=`) |
 
-Los datos siguen en memoria, definidos en `DummyData.cs`, equivalentes al antiguo `mock.service.ts` / `mock.js`.
-
-### Endpoints relevantes para Angular
-
-| Método | Ruta | Uso en el front |
-|--------|------|-----------------|
-| `GET` | `/api/kpis` | Tarjetas KPI del dashboard |
-| `GET` | `/api/shipments/recent` | Lista “Recent Shipments” |
-| `GET` | `/api/shipments/by-status` | Gráfico de barras por estado |
-| `GET` | `/api/shipments` | Tabla completa de envíos (opcionalmente `?q=` y `?status=`) |
-| `GET` | `/api/documents` | Lista de documentos (opcionalmente `?type=`) |
-
-Detalle de contratos: `shiptrack-api/API.md`.
-
-### Ejecución
+Contrato detallado: `shiptrack-api/API.md`.
 
 ```bash
 cd shiptrack-api
@@ -48,55 +40,40 @@ dotnet run
 
 ---
 
-## Front (`angular`)
+## Front Angular (`angular/`)
 
-### Configuración global
-
-- **`app.config.ts`**: se registra `provideHttpClient()` para poder inyectar `HttpClient` en servicios.
-- **`src/environments/environment.ts`**: `apiUrl` (por defecto `http://localhost:3000`).
-- **`angular.json`**: en la configuración **development** de build, `fileReplacements` sustituye `environment.ts` por `environment.development.ts` (misma `apiUrl` hoy; sirve para separar entornos más adelante).
-
-### Modelos (`src/app/data/shiptrack.models.ts`)
-
-Interfaces TypeScript que reflejan el JSON de la API: `KpiCard`, `RecentShipment`, `ShipmentByStatus`, `ShipmentRow`, `DocumentItem`. Así el tipado del front coincide con lo que devuelve .NET.
-
-### Servicio HTTP (`src/app/data/shiptrack-api.service.ts`)
-
-- `providedIn: 'root'`.
-- Inyecta `HttpClient` y usa `environment.apiUrl` como prefijo.
-- Un método por recurso (`getKpis()`, `getShipments()`, etc.), usando `HttpParams` cuando hay query strings.
-
-### Páginas conectadas
-
-1. **Dashboard** (`pages/dashboard/`)
-   - En `ngOnInit`, `forkJoin` de `getKpis()`, `getRecentShipments()` y `getShipmentByStatus()`.
-   - Resultados en **signals**; la plantilla usa `kpiCards()`, `recentShipments()`, `shipmentByStatus()`.
-   - `maxCount` es un `computed` a partir de los conteos por estado.
-   - Estados **loading** y **error** (mensaje si la API no responde).
-
-2. **Shipments** (`pages/shipments/`)
-   - `getShipments()` al iniciar → signal `rows`.
-   - El buscador sigue filtrando en **cliente** sobre `rows` (misma UX que antes con mock).
-
-3. **Documents** (`pages/documents/`)
-   - `getDocuments()` al iniciar → signal `documents`.
-   - Las pestañas filtran en **cliente** por `type` (`all`, `bill`, `invoice`, `certificate`).
-
-### Mock local (`src/app/data/mock.service.ts`)
-
-Sigue existiendo con los mismos datos en memoria por si quieres una demo sin API; las pantallas anteriores ya no lo usan por defecto.
-
-### Ejecución
-
-Con la API en marcha:
+- **`provideHttpClient()`** en `app.config.ts`.
+- **`src/environments/environment.ts`**: `apiUrl` (default `http://localhost:3000`); `fileReplacements` en build **development**.
+- **`shiptrack.models.ts`**: interfaces.
+- **`shiptrack-api.service.ts`**: métodos HTTP tipados.
+- **Dashboard**: `forkJoin` en `ngOnInit` + signals + loading/error.
+- **Shipments** / **Documents**: carga inicial desde API; búsqueda y pestañas en cliente.
+- **`mock.service.ts`**: opcional, sin uso por defecto en esas páginas.
 
 ```bash
 cd angular
-npm install   # la primera vez
 npm start
 ```
 
-Abre **http://localhost:4200**.
+→ **http://localhost:4200**
+
+---
+
+## Front React (`react/`)
+
+- **`src/config.js`**: `apiUrl` desde `import.meta.env.VITE_API_URL` con fallback `http://localhost:3000`.
+- **`.env.development`**: `VITE_API_URL=http://localhost:3000` (Vite solo expone variables con prefijo `VITE_`).
+- **`src/api/shiptrackApi.js`**: `fetch` + helpers `getKpis`, `getShipments`, etc.
+- **Dashboard**: `useEffect` + `Promise.all` de tres endpoints; `useMemo` para `maxCount`; estados loading/error.
+- **Shipments** / **Documents**: mismo patrón que Angular (carga API + filtro local).
+- **`src/data/mock.js`**: referencia offline, sin uso en esas páginas.
+
+```bash
+cd react
+npm run dev
+```
+
+→ **http://localhost:5173**
 
 ---
 
@@ -104,28 +81,26 @@ Abre **http://localhost:4200**.
 
 ```mermaid
 sequenceDiagram
-  participant UI as Angular (Dashboard / Shipments / Documents)
-  participant Svc as ShipTrackApiService
-  participant API as ASP.NET shiptrack-api
+  participant UI as Angular o React
+  participant API as shiptrack-api (.NET)
 
-  UI->>Svc: ngOnInit
-  Svc->>API: GET /api/...
-  API-->>Svc: JSON (camelCase)
-  Svc-->>UI: Observable → subscribe
-  UI->>UI: signals / computed → plantilla
+  UI->>API: GET /api/...
+  API-->>UI: JSON camelCase
+  UI->>UI: estado local → UI
 ```
 
 ---
 
 ## Qué no está en la API (aún)
 
-- **Settings**, **Tracking** y **Analytics** en Angular siguen siendo locales o placeholder; no hay endpoints dedicados.
-- No hay autenticación ni persistencia en base de datos: todo es **dummy en memoria** en el servidor.
+- **Settings**, **Tracking** y **Analytics** siguen locales o placeholder.
+- Sin autenticación ni base de datos: todo **dummy en memoria** en el servidor.
 
 ---
 
-## Referencias rápidas
+## Referencias
 
-- Contrato HTTP: `shiptrack-api/API.md`
-- Swagger (con la API en Development): `http://localhost:3000/swagger`
-- Notas de arranque del front: `angular/README.md`
+- `shiptrack-api/API.md` — endpoints
+- `http://localhost:3000/swagger` — OpenAPI (Development)
+- `angular/README.md` — arranque Angular
+- `react/README.md` — arranque React

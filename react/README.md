@@ -12,13 +12,15 @@ Dashboard de seguimiento de envíos en React, con diseño similar al de las capt
 
 ## Cómo ejecutarlo
 
+Arranca la API .NET (`../shiptrack-api`, `dotnet run`, puerto **3000**). Luego:
+
 ```bash
-cd shiptrack
+cd react
 npm install
 npm run dev
 ```
 
-Abre [http://localhost:5173](http://localhost:5173) en el navegador.
+Abre [http://localhost:5173](http://localhost:5173). La URL de la API se define con **`VITE_API_URL`** (por defecto `http://localhost:3000` vía `.env.development` y `src/config.js`).
 
 ## Build
 
@@ -34,4 +36,4 @@ npm run preview
 - Vite 5
 - CSS Modules (sin UI library)
 
-Los datos son mock en `src/data/mock.js`; puedes sustituirlos por llamadas a tu API.
+**Dashboard**, **Shipments** y **Documents** consumen la REST API (`src/api/shiptrackApi.js`). `src/data/mock.js` queda como referencia offline.

@@ -1,3 +1,5 @@
+/** Datos estáticos opcionales; Dashboard/Shipments/Documents usan la API (`src/api/shiptrackApi.js`). */
+
 export const kpiCards = [
   { label: 'Active Shipments', value: '1,247', change: '+12%', changeLabel: 'vs last week', icon: 'box' },
   { label: 'In Transit', value: '892', change: '+8%', changeLabel: 'vs last week', icon: 'truck' },

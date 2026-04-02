@@ -1,7 +1,6 @@
-import { kpiCards, recentShipments, shipmentByStatus } from '../data/mock'
+import { useState, useEffect, useMemo } from 'react'
+import { getKpis, getRecentShipments, getShipmentByStatus } from '../api/shiptrackApi'
 import styles from './Dashboard.module.css'
-
-const maxCount = Math.max(...shipmentByStatus.map((s) => s.count))
 
 function KpiIcon({ icon }) {
   const icons = {
@@ -38,14 +37,66 @@ function KpiIcon({ icon }) {
 function StatusBadge({ status }) {
   const map = {
     'In Transit': 'transit',
-    'Customs': 'customs',
-    'Delivered': 'delivered',
-    'Pending': 'pending',
+    Customs: 'customs',
+    'In Customs': 'customs',
+    Delivered: 'delivered',
+    Pending: 'pending',
   }
   return <span className={`${styles.badge} ${styles[map[status] || 'pending']}`}>{status}</span>
 }
 
 export default function Dashboard() {
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
+  const [kpiCards, setKpiCards] = useState([])
+  const [recentShipments, setRecentShipments] = useState([])
+  const [shipmentByStatus, setShipmentByStatus] = useState([])
+
+  useEffect(() => {
+    let cancelled = false
+    Promise.all([getKpis(), getRecentShipments(), getShipmentByStatus()])
+      .then(([kpis, recent, byStatus]) => {
+        if (!cancelled) {
+          setKpiCards(kpis)
+          setRecentShipments(recent)
+          setShipmentByStatus(byStatus)
+          setLoading(false)
+        }
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setError('Could not load dashboard. Is the API running on port 3000?')
+          setLoading(false)
+        }
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
+  const maxCount = useMemo(() => {
+    if (!shipmentByStatus.length) return 1
+    return Math.max(...shipmentByStatus.map((s) => s.count))
+  }, [shipmentByStatus])
+
+  if (error) {
+    return (
+      <div className={styles.page}>
+        <p className={styles.stateError} role="alert">
+          {error}
+        </p>
+      </div>
+    )
+  }
+
+  if (loading) {
+    return (
+      <div className={styles.page}>
+        <p className={styles.stateLoading}>Loading dashboard…</p>
+      </div>
+    )
+  }
+
   return (
     <div className={styles.page}>
       <header className={styles.header}>

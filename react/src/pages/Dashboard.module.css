@@ -204,3 +204,21 @@
     grid-template-columns: 80px 1fr 40px;
   }
 }
+
+.stateLoading,
+.stateError {
+  padding: 2rem 0;
+  font-size: 0.9375rem;
+}
+
+.stateLoading {
+  color: var(--text-muted);
+}
+
+.stateError {
+  color: #b91c1c;
+  background: rgba(185, 28, 28, 0.08);
+  border: 1px solid rgba(185, 28, 28, 0.25);
+  border-radius: 8px;
+  padding: 1rem 1.25rem;
+}
