@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("ShipTrack.Functions")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+8759084502d5c6a561c632d7151ec2b9c2f80a4e")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+cd5ef9b8206850335d9f1660c57d79b2cf53ef4f")]
 [assembly: System.Reflection.AssemblyProductAttribute("ShipTrack.Functions")]
 [assembly: System.Reflection.AssemblyTitleAttribute("ShipTrack.Functions")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

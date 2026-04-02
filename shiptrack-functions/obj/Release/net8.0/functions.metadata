@@ -102,6 +102,60 @@
     ]
   },
   {
+    "name": "UpdateShipment",
+    "scriptFile": "ShipTrack.Functions.dll",
+    "entryPoint": "ShipTrack.Functions.ShipmentHttpFunctions.UpdateShipment",
+    "language": "dotnet-isolated",
+    "properties": {
+      "IsCodeless": false
+    },
+    "bindings": [
+      {
+        "name": "req",
+        "direction": "In",
+        "type": "httpTrigger",
+        "authLevel": "Anonymous",
+        "methods": [
+          "put"
+        ],
+        "route": "fn/shipments/{id}",
+        "properties": {}
+      },
+      {
+        "name": "$return",
+        "type": "http",
+        "direction": "Out"
+      }
+    ]
+  },
+  {
+    "name": "DeleteShipment",
+    "scriptFile": "ShipTrack.Functions.dll",
+    "entryPoint": "ShipTrack.Functions.ShipmentHttpFunctions.DeleteShipment",
+    "language": "dotnet-isolated",
+    "properties": {
+      "IsCodeless": false
+    },
+    "bindings": [
+      {
+        "name": "req",
+        "direction": "In",
+        "type": "httpTrigger",
+        "authLevel": "Anonymous",
+        "methods": [
+          "delete"
+        ],
+        "route": "fn/shipments/{id}",
+        "properties": {}
+      },
+      {
+        "name": "$return",
+        "type": "http",
+        "direction": "Out"
+      }
+    ]
+  },
+  {
     "name": "ShipmentSqlTrigger",
     "scriptFile": "ShipTrack.Functions.dll",
     "entryPoint": "ShipTrack.Functions.ShipmentSqlTrigger.Run",
