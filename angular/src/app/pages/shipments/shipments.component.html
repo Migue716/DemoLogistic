@@ -1,4 +1,9 @@
 <div class="page">
+  @if (error()) {
+    <p class="stateError" role="alert">{{ error() }}</p>
+  } @else if (loading()) {
+    <p class="stateLoading">Loading shipments…</p>
+  } @else {
   <header class="header">
     <div>
       <h1 class="title">Shipments</h1>
@@ -63,4 +68,5 @@
       <p class="empty">No shipments match your search.</p>
     }
   </div>
+  }
 </div>

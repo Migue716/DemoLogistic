@@ -1,6 +1,8 @@
-import { Component, inject, computed, signal } from '@angular/core';
+import { Component, computed, DestroyRef, inject, OnInit, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NgClass } from '@angular/common';
-import { MockService } from '../../data/mock.service';
+import { ShipTrackApiService } from '../../data/shiptrack-api.service';
+import type { ShipmentRow } from '../../data/shiptrack.models';
 
 @Component({
   selector: 'app-shipments',
@@ -9,16 +11,21 @@ import { MockService } from '../../data/mock.service';
   templateUrl: './shipments.component.html',
   styleUrl: './shipments.component.css',
 })
-export class ShipmentsComponent {
-  private mock = inject(MockService);
+export class ShipmentsComponent implements OnInit {
+  private readonly api = inject(ShipTrackApiService);
+  private readonly destroyRef = inject(DestroyRef);
 
-  search = signal('');
-  filterOpen = signal(false);
+  readonly search = signal('');
+  readonly filterOpen = signal(false);
+  readonly loading = signal(true);
+  readonly error = signal<string | null>(null);
+  readonly rows = signal<ShipmentRow[]>([]);
 
-  filtered = computed(() => {
+  readonly filtered = computed(() => {
     const q = this.search().toLowerCase().trim();
-    if (!q) return this.mock.shipmentsTable;
-    return this.mock.shipmentsTable.filter(
+    const list = this.rows();
+    if (!q) return list;
+    return list.filter(
       (row) =>
         row.id.toLowerCase().includes(q) ||
         row.client.toLowerCase().includes(q) ||
@@ -27,12 +34,29 @@ export class ShipmentsComponent {
     );
   });
 
+  ngOnInit(): void {
+    this.api
+      .getShipments()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (data) => {
+          this.rows.set(data);
+          this.loading.set(false);
+        },
+        error: () => {
+          this.error.set('Could not load shipments. Is the API running on port 3000?');
+          this.loading.set(false);
+        },
+      });
+  }
+
   statusClass(status: string): string {
     const map: Record<string, string> = {
       'In Transit': 'transit',
-      'Customs': 'customs',
-      'Delivered': 'delivered',
-      'Pending': 'pending',
+      Customs: 'customs',
+      'In Customs': 'customs',
+      Delivered: 'delivered',
+      Pending: 'pending',
     };
     return map[status] ?? 'pending';
   }

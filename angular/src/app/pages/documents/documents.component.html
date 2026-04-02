@@ -1,4 +1,9 @@
 <div class="page">
+  @if (error()) {
+    <p class="stateError" role="alert">{{ error() }}</p>
+  } @else if (loading()) {
+    <p class="stateLoading">Loading documents…</p>
+  } @else {
   <header class="header">
     <h1 class="title">Documents</h1>
     <p class="subtitle">Manage shipping documents and certificates</p>
@@ -43,4 +48,5 @@
       <p class="empty">No documents in this category.</p>
     }
   </div>
+  }
 </div>

@@ -1,11 +1,16 @@
 <div class="page">
+  @if (error()) {
+    <p class="stateError" role="alert">{{ error() }}</p>
+  } @else if (loading()) {
+    <p class="stateLoading">Loading dashboard…</p>
+  } @else {
   <header class="header">
     <h1 class="title">Dashboard Overview</h1>
     <p class="subtitle">Track your shipments in real-time.</p>
   </header>
 
   <div class="kpiGrid">
-    @for (card of kpiCards; track card.label) {
+    @for (card of kpiCards(); track card.label) {
       <div class="kpiCard">
         <div class="kpiIcon">
           @switch (card.icon) {
@@ -50,7 +55,7 @@
     <section class="card">
       <h2 class="cardTitle">Recent Shipments</h2>
       <ul class="shipmentList">
-        @for (s of recentShipments; track s.id) {
+        @for (s of recentShipments(); track s.id) {
           <li class="shipmentRow">
             <div>
               <span class="shipmentId">{{ s.id }}</span>
@@ -68,13 +73,13 @@
     <section class="card">
       <h2 class="cardTitle">Shipment by Status</h2>
       <div class="barChart">
-        @for (item of shipmentByStatus; track item.status) {
+        @for (item of shipmentByStatus(); track item.status) {
           <div class="barRow">
             <span class="barLabel">{{ item.status }}</span>
             <div class="barTrack">
               <div
                 class="barFill"
-                [style.width.%]="(item.count / maxCount) * 100"
+                [style.width.%]="(item.count / maxCount()) * 100"
                 [style.background-color]="item.color"
               ></div>
             </div>
@@ -84,4 +89,5 @@
       </div>
     </section>
   </div>
+  }
 </div>
