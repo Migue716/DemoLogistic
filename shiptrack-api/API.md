@@ -3,6 +3,8 @@
 **Base URL (desarrollo):** `http://localhost:3000`  
 **Documentación interactiva (solo Development):** `http://localhost:3000/swagger`  
 
+Los datos salen de **SQL Server** (base **ShipTrack**). Crea tablas y datos con `Scripts/CreateShipTrack.sql`. La cadena de conexión va en `ConnectionStrings:ShipTrack` (`appsettings.json` / `appsettings.Development.json`).
+
 Todas las respuestas son **JSON** con propiedades en **camelCase**. No requiere autenticación (demo).
 
 ---
@@ -11,7 +13,7 @@ Todas las respuestas son **JSON** con propiedades en **camelCase**. No requiere 
 
 Índice con la lista de rutas disponibles.
 
-**Respuesta:** objeto con `name`, `version` y `endpoints`.
+**Respuesta:** objeto con `name`, `version`, `dataSource` (`SQL Server`) y `endpoints`.
 
 ---
 

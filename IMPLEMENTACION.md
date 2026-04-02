@@ -8,7 +8,7 @@ Este documento describe la integración entre los fronts **Angular** y **React**
 
 | Capa | Ubicación | Rol |
 |------|-----------|-----|
-| API REST | `shiptrack-api/` | Datos dummy en JSON (misma forma que el mock original). |
+| API REST | `shiptrack-api/` | Lee datos desde **SQL Server** (base `ShipTrack`; script en `Scripts/CreateShipTrack.sql`). |
 | Front Angular | `angular/` | `HttpClient` + servicio inyectable. |
 | Front React | `react/` | `fetch` + módulo `shiptrackApi.js`. |
 
@@ -19,7 +19,8 @@ La API corre por defecto en **http://localhost:3000**. CORS permite **4200** (An
 ## Backend (`shiptrack-api`)
 
 - **ASP.NET Core 8**, Minimal API, **Swagger** en Development (`/swagger`).
-- JSON en **camelCase**. Datos en `DummyData.cs`.
+- **EF Core** + proveedor SQL Server. JSON en **camelCase**.
+- Cadena de conexión: `ConnectionStrings:ShipTrack` (LocalDB por defecto).
 
 ### Endpoints usados por ambos fronts
 
