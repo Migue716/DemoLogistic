@@ -8,6 +8,9 @@
   Con Encrypt=True, en LocalDB a veces hace falta Trust Server Certificate=True (ver appsettings).
 
   Si la base ya existe, comenta o elimina el bloque CREATE DATABASE.
+
+  Para Azure Functions con SqlTrigger en Shipments, ejecuta también
+  Scripts/EnableChangeTracking.sql
 */
 
 SET NOCOUNT ON;

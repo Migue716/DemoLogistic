@@ -9,6 +9,7 @@ Demo de **seguimiento logístico** con dos frontends (Angular y React), una **AP
 | `shiptrack-api/` | API ASP.NET Core (Minimal API, EF Core, Swagger). Puerto por defecto **3000**. |
 | `angular/` | App Angular 18 (Dashboard, Shipments, Documents conectados a la API). Puerto **4200**. |
 | `react/` | App React + Vite (mismas pantallas contra la API). Puerto **5173**. |
+| `shiptrack-functions/` | Azure Functions (.NET 8): trigger SQL en `Shipments`, HTTP para listar/insertar. Ver su `README.md`. |
 
 ## Requisitos previos
 

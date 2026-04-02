@@ -11,6 +11,7 @@ Este documento describe la integración entre los fronts **Angular** y **React**
 | API REST | `shiptrack-api/` | Lee datos desde **SQL Server** (base `ShipTrack`; script en `Scripts/CreateShipTrack.sql`). |
 | Front Angular | `angular/` | `HttpClient` + servicio inyectable. |
 | Front React | `react/` | `fetch` + módulo `shiptrackApi.js`. |
+| Azure Functions | `shiptrack-functions/` | **SqlTrigger** + **SqlInput** / **SqlOutput** sobre `dbo.Shipments` (ver `README.md` del proyecto). |
 
 La API corre por defecto en **http://localhost:3000**. CORS permite **4200** (Angular) y **5173** (Vite).
 
@@ -34,10 +35,20 @@ La API corre por defecto en **http://localhost:3000**. CORS permite **4200** (An
 
 Contrato detallado: `shiptrack-api/API.md`.
 
+Después de crear la BD, ejecuta **`shiptrack-api/Scripts/EnableChangeTracking.sql`** si usas el **SqlTrigger** de Functions.
+
 ```bash
 cd shiptrack-api
 dotnet run
 ```
+
+### Azure Functions (`shiptrack-functions/`)
+
+- **Detección de cambios (INSERT/UPDATE/DELETE):** enlace `[SqlTrigger]` sobre `[dbo].[Shipments]`; requiere **Change Tracking** en la base y en la tabla.
+- **Obtener datos:** `GET /api/fn/shipments` y `GET /api/fn/shipments/{id}` con **SqlInput**.
+- **Insertar:** `POST /api/fn/shipments` con **SqlOutput** (JSON camelCase).
+
+Local: `func start` o `dotnet run`; cadena `SqlConnectionString` en `local.settings.json`.
 
 ---
 
