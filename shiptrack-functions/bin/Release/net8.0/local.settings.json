@@ -1,8 +1,0 @@
-{
-  "IsEncrypted": false,
-  "Values": {
-    "AzureWebJobsStorage": "UseDevelopmentStorage=true",
-    "FUNCTIONS_WORKER_RUNTIME": "dotnet-isolated",
-    "SqlConnectionString": "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=ShipTrack;Integrated Security=True;Encrypt=True;Trust Server Certificate=True;Multiple Active Result Sets=false;Application Name=ShipTrack.Functions"
-  }
-}
