@@ -29,9 +29,11 @@ node_modules/
 **/node_modules/
 **/.vite/
 
-# Front — builds y caché Angular
+# Front — builds y caché Angular (incl. vite/deps/_metadata.json bajo .angular/cache)
 **/dist/
+**/.angular/
 **/.angular/cache/
+/angular/.angular/
 
 # IDE
 .vs/
@@ -54,6 +56,7 @@ node_modules/
 # Rutas explícitas del monorepo (refuerzo por si los patrones globales fallan en algún cliente)
 /react/node_modules/
 /angular/node_modules/
+/angular/.angular/
 /shiptrack-functions/bin/
 /shiptrack-functions/obj/
 /shiptrack-api/bin/
